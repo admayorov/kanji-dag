@@ -1,0 +1,26 @@
+I need this directrort structure
+
+kanji-dag/
+├── src/
+│   ├── index.html
+│   ├── style.css
+│   └── main.js
+├── package.json
+└── vite.config.js
+
+# Create the main project directory
+mkdir kanji-dag
+
+# Change into the project directory
+cd kanji-dag
+
+# Create the src directory
+mkdir src
+
+# Create the files in the src directory
+touch src/index.html
+touch src/style.css
+touch src/main.js
+touch package.json
+touch vite.config.js
+

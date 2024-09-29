@@ -1,0 +1,25 @@
+{
+  "name": "kanji-dag",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cola": "^0.1.7",
+    "cytoscape": "^3.30.2",
+    "cytoscape-cola": "^2.5.1",
+    "cytoscape-layout-utilities": "^1.1.1",
+    "cytoscape-node-html-label": "^1.2.2",
+    "dagre": "^0.8.5"
+  },
+  "devDependencies": {
+    "vite": "^5.4.8"
+  }
+}
