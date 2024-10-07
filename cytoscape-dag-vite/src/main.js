@@ -8,6 +8,8 @@ cytoscape.use(nodeHtmlLabel);
 
 let cy; // Declare cy in a wider scope
 let allElements; // Store all graph elements
+let chosenNodeId;
+let nodesToExpand = [];
 
 document.addEventListener('DOMContentLoaded', function () {
     // Create a select element for choosing the node
@@ -33,8 +35,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         option.selected = true;
                     }
                 }
-
-
             });
 
             // Initialize cytoscape
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         selector: 'node',
                         style: {
-                            'background-color': '#666',
+                            'background-color': ele => ele.data().learned ? '#4CAF50' : '#666',
                             'text-valign': 'center',
                             'text-halign': 'center',
                             'text-wrap': 'wrap',
@@ -57,7 +57,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             'font-size': '15px',
                             'color': '#fff',
                             'text-outline-width': 1,
-                            'text-outline-color': '#666'
+                            'text-outline-color': '#666',
+                            'border-color': '#666',
+                            'border-width': 2,
+                            'height': 30,
+                            'width': 30,
                         }
                     },
                     {
@@ -95,11 +99,23 @@ document.addEventListener('DOMContentLoaded', function () {
             selectElement.addEventListener('change', (event) => {
                 updateGraph(event.target.value);
             });
+
+            // Add click event listener to nodes
+            cy.on('tap', 'node', function(evt){
+                const node = evt.target;
+                console.log(node.data())
+                expandNode(node);
+            });
         })
         .catch(error => console.error('Error fetching graph data:', error));
 });
 
-function updateGraph(chosenNodeId) {
+function updateGraph(newChosenNodeId) {
+    if (newChosenNodeId) {
+        chosenNodeId = newChosenNodeId;
+        nodesToExpand = [];
+    }
+
     // Restore all elements to the graph
     cy.elements().remove();
     cy.add(allElements);
@@ -107,13 +123,34 @@ function updateGraph(chosenNodeId) {
     // Filter the graph to show only the chosen node and its descendants
     const chosenNode = cy.getElementById(chosenNodeId);
     const descendants = chosenNode.successors();
-    const nodesToKeep = descendants.union(chosenNode);
+
+    let nodesToKeep = descendants.union(chosenNode)
+
+    // descendants.forEach(node => {
+    //     const desc_parents = node.neighborhood().difference(descendants);
+    //     desc_parents.data({coparent: true})
+    //     nodesToKeep = nodesToKeep.union(desc_parents);
+    // })
+
+    nodesToExpand.forEach(node => {
+        nodesToKeep = nodesToKeep.union(node.neighborhood());
+    })
     cy.elements().difference(nodesToKeep).remove();
 
     // Apply layout
+    applyLayout();
+}
+
+function expandNode(node) {
+    console.log(node.data().learned)
+    nodesToExpand.push(node)
+    updateGraph()
+}
+
+function applyLayout() {
     cy.layout({
         name: "cola",
         infinite: true,
-        fit: false
+        fit: false,
     }).run();
 }
